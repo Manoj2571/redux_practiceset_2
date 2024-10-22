@@ -54,6 +54,28 @@ app.get("/movies", async (req, res) => {
   }
 })
 
+app.post("/movies/:movieId", async (req, res) => {
+  try {
+    const updatedMovie = await updateMovieById(req.params.movieId, req.body)
+    if(updatedMovie) {
+      res.status(201).json({message: "Movie updated successfully.", updatedMovie: updatedMovie})
+    } else {
+      res.status(404).json({error: "Movie not found."})
+    }
+  } catch (error) {
+    res.status(500).json({error: "Failed to update movie."})
+  }
+})
+
+async function updateMovieById(movieId, dataToUpdate) {
+  try {
+    const updatedMovie = Movie.findByIdAndUpdate(movieId, dataToUpdate, {new: true})
+    return updatedMovie
+  } catch (error) {
+    console.log(error)
+  }
+}
+
 async function createMovie(newMovie) {
   try {
     const movie = new Movie(newMovie)
